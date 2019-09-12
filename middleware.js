@@ -9,6 +9,7 @@ function webpackHotMiddleware(compiler, opts) {
     typeof opts.log == 'undefined' ? console.log.bind(console) : opts.log;
   opts.path = opts.path || '/__webpack_hmr';
   opts.heartbeat = opts.heartbeat || 10 * 1000;
+  opts.clientCountPath = opts.clientCountPath || `${opts.path}_client_count`;
 
   var eventStream = createEventStream(opts.heartbeat);
   var latestStats = null;
@@ -35,12 +36,18 @@ function webpackHotMiddleware(compiler, opts) {
   }
   var middleware = function(req, res, next) {
     if (closed) return next();
-    if (!pathMatch(req.url, opts.path)) return next();
-    eventStream.handler(req, res);
-    if (latestStats) {
-      // Explicitly not passing in `log` fn as we don't want to log again on
-      // the server
-      publishStats('sync', latestStats, eventStream);
+    if (pathMatch(req.url, opts.clientCountPath)) {
+      res.end({
+        clientCount: eventStream.clientCount()
+      })
+    } else {
+      if (!pathMatch(req.url, opts.path)) return next();
+      eventStream.handler(req, res);
+      if (latestStats) {
+        // Explicitly not passing in `log` fn as we don't want to log again on
+        // the server
+        publishStats('sync', latestStats, eventStream);
+      }
     }
   };
   middleware.publish = function(payload) {
@@ -111,6 +118,9 @@ function createEventStream(heartbeat) {
         client.write('data: ' + JSON.stringify(payload) + '\n\n');
       });
     },
+    clientCount: function() {
+      return Object.keys(clients).length
+    }
   };
 }
 

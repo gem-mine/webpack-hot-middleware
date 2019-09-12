@@ -1,6 +1,6 @@
 {
-  "name": "webpack-hot-middleware",
-  "version": "2.25.0",
+  "name": "@gem-mine/webpack-hot-middleware",
+  "version": "2.26.0",
   "description": "Webpack hot reloading you can attach to your own server",
   "keywords": [
     "webpack",
@@ -24,7 +24,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/webpack-contrib/webpack-hot-middleware.git"
+    "url": "https://github.com/gem-mine/webpack-hot-middleware.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "http://registry.npmjs.org/"
   },
   "author": "Glen Mailer <glen@stainlessed.co.uk>",
   "license": "MIT",
